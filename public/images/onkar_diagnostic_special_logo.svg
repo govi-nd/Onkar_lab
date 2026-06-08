@@ -1,0 +1,44 @@
+<svg width="100%" viewBox="0 0 680 160" role="img" xmlns="http://www.w3.org/2000/svg" style="">
+  <title style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">Onkar Diagnostic Logo</title>
+  <desc style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">Logo for Onkar Diagnostic with a unique hexagonal icon and stylized O lettermark</desc>
+
+  <defs>
+    
+  </defs>
+
+  <!-- Hexagon icon background -->
+  <polygon points="75,22 108,40 108,78 75,96 42,78 42,40" fill="#0d2b45" style="fill:rgb(13, 43, 69);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Inner hexagon ring -->
+  <polygon points="75,32 101,47 101,72 75,87 49,72 49,47" fill="none" stroke="#1e4d6e" stroke-width="1.5" style="fill:none;stroke:rgb(30, 77, 110);color:rgb(255, 255, 255);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Stylized microscope / cell shape inside hex -->
+  <!-- Circle = cell nucleus -->
+  <circle cx="75" cy="59" r="13" fill="none" stroke="#e05c2a" stroke-width="2.5" style="fill:none;stroke:rgb(224, 92, 42);color:rgb(255, 255, 255);stroke-width:2.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <!-- Small nucleus dot -->
+  <circle cx="75" cy="59" r="4" fill="#e05c2a" style="fill:rgb(224, 92, 42);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <!-- Orbiting ring — represents molecular/diagnostic theme -->
+  <ellipse cx="75" cy="59" rx="20" ry="7" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="3 2" style="fill:none;stroke:rgb(255, 255, 255);color:rgb(255, 255, 255);stroke-width:1.5px;stroke-dasharray:3px, 2px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Vertical stem of microscope feel -->
+  <line x1="75" y1="72" x2="75" y2="84" stroke="#e05c2a" stroke-width="2" stroke-linecap="round" style="fill:rgb(0, 0, 0);stroke:rgb(224, 92, 42);color:rgb(255, 255, 255);stroke-width:2px;stroke-linecap:round;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <line x1="68" y1="84" x2="82" y2="84" stroke="#e05c2a" stroke-width="2" stroke-linecap="round" style="fill:rgb(0, 0, 0);stroke:rgb(224, 92, 42);color:rgb(255, 255, 255);stroke-width:2px;stroke-linecap:round;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Top dot accent -->
+  <circle cx="75" cy="34" r="3" fill="#e05c2a" style="fill:rgb(224, 92, 42);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- ONKAR with accent O -->
+  <text x="132" y="72" style="fill:rgb(0, 0, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto">
+    <tspan style="fill:rgb(224, 92, 42);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Georgia, &quot;Times New Roman&quot;, serif;font-size:42px;font-weight:700;text-anchor:start;dominant-baseline:auto">O</tspan><tspan style="fill:rgb(13, 43, 69);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Georgia, &quot;Times New Roman&quot;, serif;font-size:42px;font-weight:700;text-anchor:start;dominant-baseline:auto">NKAR</tspan>
+  </text>
+
+  <!-- Thin divider line -->
+  <rect x="132" y="82" width="310" height="1" rx="0.5" fill="#c8dce8" style="fill:rgb(200, 220, 232);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- DIAGNOSTIC label -->
+  <text x="134" y="101" style="fill:rgb(107, 143, 168);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Arial, Helvetica, sans-serif;font-size:12.5px;font-weight:400;text-anchor:start;dominant-baseline:auto">DIAGNOSTIC CENTRE</text>
+
+  <!-- Tagline -->
+  <text x="135" y="122" style="fill:rgb(170, 196, 213);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Arial, Helvetica, sans-serif;font-size:11px;font-weight:400;text-anchor:start;dominant-baseline:auto">Precision  ·  Care  ·  Trust</text>
+
+</svg>
