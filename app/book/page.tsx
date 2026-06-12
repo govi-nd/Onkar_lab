@@ -106,7 +106,7 @@ function BookComponent() {
                       onClick={() => removeTest(test.id)}
                       className="font-bold"
                     >
-                      ×
+                      
                     </button>
                   </div>
                 ))}
@@ -195,11 +195,11 @@ function BookComponent() {
 
                 <select defaultValue="" onChange={(e)=>{setSelectedslot(e.target.value)}} className="w-full rounded-lg border border-gray-300 p-3">
                   <option>Select Slot</option>
-                  <option>09:00 AM</option>
-                  <option>11:00 AM</option>
-                  <option>01:00 PM</option>
-                  <option>03:00 PM</option>
-                  <option>05:00 PM</option>
+                  <option>09:00 AM - 11:00 AM</option>
+                  <option>11:00 AM - 1:00 PM</option>
+                  <option>01:00 PM - 03:00 PM</option>
+                  <option>03:00 PM - 05:00 PM</option>
+                  <option>05:00 PM - 07:00 PM</option>
                 </select>
               </div>
             </div>
