@@ -1,15 +1,55 @@
-export default function () {
+"use client";
+
+import { useState } from "react";
+
+export default function Page() {
   return (
     <div>
       <BookComponent />
     </div>
   );
 }
+
 function BookComponent() {
+  const tests = [
+    { id: "cbc", title: "CBC Test", price: 500 },
+    { id: "sugar", title: "Blood Sugar Test", price: 150 },
+    { id: "liver", title: "Liver Function Test", price: 1200 },
+    { id: "heart", title: "Heart Profile", price: 2000 },
+  ];
+  const [selectedSlot , setSelectedslot]=useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const formattedDate = selectedDate
+    ? new Date(selectedDate).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : "";
+
+  const [selectedTests, setSelectedTests] = useState<string[]>([]);
+
+  const handleAddTest = (testId: string) => {
+    if (!selectedTests.includes(testId)) {
+      setSelectedTests([...selectedTests, testId]);
+    }
+  };
+
+  const removeTest = (testId: string) => {
+    setSelectedTests(selectedTests.filter((id) => id !== testId));
+  };
+
+  const selectedTestObjects = tests.filter((test) =>
+    selectedTests.includes(test.id),
+  );
+
+  const total = selectedTestObjects.reduce((sum, test) => sum + test.price, 0);
+
   return (
     <>
-      <div className=" mt-4 text-center">
-        <div className="mx-auto w-fit flex items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-600">
+      {/* Header */}
+      <div className="mt-4 text-center">
+        <div className="mx-auto flex w-fit items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-600">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -20,61 +60,99 @@ function BookComponent() {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="lucide lucide-calendar-check h-3.5 w-3.5 text-primary"
-            aria-hidden="true"
+            className="h-3.5 w-3.5"
           >
-            <path d="M8 2v4"></path>
-            <path d="M16 2v4"></path>
-            <rect width="18" height="18" x="3" y="4" rx="2"></rect>
-            <path d="M3 10h18"></path>
-            <path d="m9 16 2 2 4-4"></path>
+            <path d="M8 2v4" />
+            <path d="M16 2v4" />
+            <rect width="18" height="18" x="3" y="4" rx="2" />
+            <path d="M3 10h18" />
+            <path d="m9 16 2 2 4-4" />
           </svg>
-          "Book your appointment"
+          Book your appointment
         </div>
-        <h1 className="text-3xl font-bold mt-3 text-[oklch(20% .03 250)] ">
+
+        <h1 className="mt-3 text-4xl font-bold text-gray-900">
           Schedule your test
         </h1>
-        <p className="mt-2 test-sm text-[oklch(50% .02 250)]">
-          Takes under 2 minutes. Pay securely after confirmation
-        </p>
+
+        <p className="mt-2 text-gray-500 ">Pay securely</p>
       </div>
-      
-        <div className="grid grid-cols-[520px_320px] gap-12 justify-center mt-6">
+
+      {/* Main Layout */}
+      <div className="mt-8 flex justify-center">
+        <div className="grid grid-cols-[520px_320px] gap-12 items-start">
+          {/* Form */}
           <form
             noValidate
-            className="mx-auto w-full max-w-[520px] rounded-2xl border border-gray-200 bg-white p-6 "
+            className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm"
           >
             {/* Select Test */}
             <div className="mb-4">
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                Select Test
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Select Tests
               </label>
-              <select className="w-full rounded-lg border border-gray-300 p-3">
-                <option>Choose a test</option>
-                <option>CBC - ₹500</option>
-                <option>Liver Function - ₹1200</option>
-                <option>Blood Sugar - ₹300</option>
+
+              {/* Selected Tags */}
+              <div className="mb-3 flex flex-wrap gap-2">
+                {selectedTestObjects.map((test) => (
+                  <div
+                    key={test.id}
+                    className="flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700"
+                  >
+                    <span>{test.title}</span>
+
+                    <button
+                      type="button"
+                      onClick={() => removeTest(test.id)}
+                      className="font-bold"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Dropdown */}
+              <select
+                defaultValue=""
+                onChange={(e) => {
+                  if (e.target.value) {
+                    handleAddTest(e.target.value);
+                    e.target.value = "";
+                  }
+                }}
+                className="w-full rounded-lg border border-gray-300 p-3"
+              >
+                <option value="">Choose a test</option>
+
+                {tests.map((test) => (
+                  <option key={test.id} value={test.id}>
+                    {test.title} — ₹{test.price}
+                  </option>
+                ))}
               </select>
             </div>
 
             {/* Full Name */}
             <div className="mb-4">
-              <label className="mb-1 block text-sm font-medium text-gray-700">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Full Name
               </label>
+
               <input
                 type="text"
-                placeholder="e.g. Govind Prashar"
+                placeholder="e.g. Govind "
                 className="w-full rounded-lg border border-gray-300 p-3"
               />
             </div>
 
+            {/* Phone + Email */}
             <div className="grid gap-4 sm:grid-cols-2">
-              {/* Phone */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Phone Number
                 </label>
+
                 <input
                   type="tel"
                   placeholder="+91 98xxxxxxx"
@@ -82,11 +160,11 @@ function BookComponent() {
                 />
               </div>
 
-              {/* Email */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Email
                 </label>
+
                 <input
                   type="email"
                   placeholder="you@example.com"
@@ -95,24 +173,27 @@ function BookComponent() {
               </div>
             </div>
 
+            {/* Date + Slot */}
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              {/* Date */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Preferred Date
                 </label>
+
                 <input
                   type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 p-3"
                 />
               </div>
 
-              {/* Time Slot */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Time Slot
                 </label>
-                <select className="w-full rounded-lg border border-gray-300 p-3">
+
+                <select defaultValue="" onChange={(e)=>{setSelectedslot(e.target.value)}} className="w-full rounded-lg border border-gray-300 p-3">
                   <option>Select Slot</option>
                   <option>09:00 AM</option>
                   <option>11:00 AM</option>
@@ -125,90 +206,79 @@ function BookComponent() {
 
             {/* Notes */}
             <div className="mt-4">
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                Special Notes
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Special Notes (optional)
               </label>
+
               <textarea
-                rows={3}
+                rows={2}
                 placeholder="Any allergies, fasting status, or instructions"
                 className="w-full rounded-lg border border-gray-300 p-3"
               />
             </div>
 
-            {/* Submit */}
+            {/* Button */}
             <button
               type="submit"
               className="mt-6 w-full rounded-lg bg-blue-600 py-3 font-medium text-white transition hover:bg-blue-700"
             >
-              Book Appointment
+              Pay ₹{total} via Razorpay
             </button>
 
-            <p className="mt-3 text-center text-xs text-gray-500">
+            <p className="mt-4 text-center text-xs text-gray-500">
               By booking, you agree to our terms of service and privacy policy.
             </p>
           </form>
 
-          <aside className="h-fit  rounded-2xl border border-gray-200 bg-gray-50 p-6">
-            <h3 className="text-sm font-semibold text-gray-900">
+          {/* Summary */}
+          <aside className="sticky top-24 h-fit rounded-2xl border border-gray-200 bg-gray-50 p-6">
+            <h3 className="text-lg font-semibold text-gray-900">
               Order Summary
             </h3>
 
-            <div className="mt-4 space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Test</span>
-                <span className="font-medium">CBC</span>
+            <div className="mt-5 space-y-4 text-sm">
+              <div>
+                <span className="text-gray-500">Tests</span>
+
+                <div className="mt-2 space-y-2">
+                  {selectedTestObjects.length === 0 ? (
+                    <p className="text-gray-400 ">No tests selected</p>
+                  ) : (
+                    selectedTestObjects.map((test) => (
+                      <div key={test.id} className="flex justify-between font-bold">
+                        <span>{test.title}</span>
+                        <span>₹{test.price}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
 
               <div className="flex justify-between">
                 <span className="text-gray-500">Date</span>
-                <span className="font-medium">—</span>
+                <span className="font-medium">{formattedDate || "—"}</span>
               </div>
 
               <div className="flex justify-between">
                 <span className="text-gray-500">Slot</span>
-                <span className="font-medium">—</span>
+                <span className="font-medium">{selectedSlot}</span>
               </div>
 
               <hr />
 
               <div className="flex justify-between">
                 <span className="text-gray-500">Total</span>
-                <span className="text-xl font-bold">₹500</span>
+
+                <span className="text-2xl font-bold">₹{total}</span>
               </div>
             </div>
 
-            <p className="mt-4 text-xs text-gray-500">
+            <p className="mt-5 text-xs text-gray-500">
               Reports delivered digitally within 24 hours of sample collection.
             </p>
           </aside>
         </div>
-     
+      </div>
     </>
-  );
-}
-function Field({
-  label,
-  error,
-  children,
-}: {
-  label: string;
-  error?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="mb-4 grid gap-1.5">
-      <Label className="text-sm font-medium text-foreground">{label}</Label>
-      {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
-    </div>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-start justify-between gap-3">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="text-right font-medium text-foreground">{value}</span>
-    </div>
   );
 }
