@@ -189,11 +189,11 @@ function BookComponent() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-medium text-gray-700 ">
                   Time Slot
                 </label>
 
-                <select defaultValue="" onChange={(e)=>{setSelectedslot(e.target.value)}} className="w-full rounded-lg border border-gray-300 p-3">
+                <select defaultValue=""  onChange={(e)=>{setSelectedslot(e.target.value)}} className="w-full rounded-lg border border-gray-300 p-3">
                   <option>Select Slot</option>
                   <option>09:00 AM - 11:00 AM</option>
                   <option>11:00 AM - 1:00 PM</option>
