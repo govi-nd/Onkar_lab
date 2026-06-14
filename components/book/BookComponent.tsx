@@ -95,13 +95,13 @@ export default function BookComponent({ tests }: BookComponentProps) {
                     key={test.id}
                     className="flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700"
                   >
-                    <span>{test.title}</span>
+                    <span >{test.title}</span>
 
                     <button
                       type="button"
                       onClick={() => removeTest(test.id)}
-                      className="font-bold"
-                    ></button>
+                      className="font-medium cursor-pointer"
+                    >×</button>
                   </div>
                 ))}
               </div>
