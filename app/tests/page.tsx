@@ -1,146 +1,64 @@
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
-/* =========================
-   PAGE
-========================= */
+type TestDetails = {
+  id: string;
+  title: string;
+  subtitle: string;
+  price: number;
+};
 
-export default function Home() {
+export default async function Home() {
+  const testDetails = await prisma.test.findMany({
+    orderBy: {
+      title: "asc",
+    },
+    select: {
+      id: true,
+      title: true,
+      subtitle: true,
+      price: true,
+    },
+  });
+
   return (
     <div className="min-h-screen bg-[#f7f8fa] py-10">
-  
-  {/* Container */}
-  <div className="mx-auto max-w-7xl px-6">
-    
-    {/* Cards Grid */}
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-      
-      <TestCard
-        title="Complete Blood Count (CBC)"
-        subtitle="Evaluates overall health and detects a range of disorders."
-        category="Hematology"
-        deliversIn="24hrs"
-        price="350"
-      />
-      <TestCard
-        title="Complete Blood Count (CBC)"
-        subtitle="Evaluates overall health and detects a range of disorders."
-        category="Hematology"
-        deliversIn="24hrs"
-        price="350"
-      />
-      <TestCard
-        title="Complete Blood Count (CBC)"
-        subtitle="Evaluates overall health and detects a range of disorders."
-        category="Hematology"
-        deliversIn="24hrs"
-        price="350"
-      />
-      <TestCard
-        title="Complete Blood Count (CBC)"
-        subtitle="Evaluates overall health and detects a range of disorders."
-        category="Hematology"
-        deliversIn="24hrs"
-        price="350"
-      />
-      <TestCard
-        title="Complete Blood Count (CBC)"
-        subtitle="Evaluates overall health and detects a range of disorders."
-        category="Hematology"
-        deliversIn="24hrs"
-        price="350"
-      />
-      <TestCard
-        title="Complete Blood Count (CBC)"
-        subtitle="Evaluates overall health and detects a range of disorders."
-        category="Hematology"
-        deliversIn="24hrs"
-        price="350"
-      />
-      <TestCard
-        title="Complete Blood Count (CBC)"
-        subtitle="Evaluates overall health and detects a range of disorders."
-        category="Hematology"
-        deliversIn="24hrs"
-        price="350"
-      />
-      <TestCard
-        title="Complete Blood Count (CBC)"
-        subtitle="Evaluates overall health and detects a range of disorders."
-        category="Hematology"
-        deliversIn="24hrs"
-        price="350"
-      />
-      <TestCard
-        title="Complete Blood Count (CBC)"
-        subtitle="Evaluates overall health and detects a range of disorders."
-        category="Hematology"
-        deliversIn="24hrs"
-        price="350"
-      />
-
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {testDetails.map((test) => (
+            <TestCard key={test.id} test={test} />
+          ))}
+        </div>
+      </div>
     </div>
-  </div>
-</div>
   );
 }
 
-/* =========================
-   TYPES
-========================= */
-
-type TestTypes = {
-  title: string;
-  subtitle: string;
-  category: string;
-  deliversIn: string;
-  price: string;
-};
-
-/* =========================
-   COMPONENT
-========================= */
-
-function TestCard({
-  title,
-  subtitle,
-  category,
-  deliversIn,
-  price,
-}: TestTypes) {
+function TestCard({ test }: { test: TestDetails }) {
   return (
     <div className="flex h-full w-96 flex-col rounded-xl border border-gray-200 bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-      
-      {/* Top Section */}
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-base font-bold text-[oklch(20%_.03_250)]">
-          {title}
+          {test.title}
         </h3>
 
         <div className="rounded-md bg-[#ECF0E9] px-2.5 py-0.5 text-xs font-bold text-[#426F23]">
-          {category}
+          general
         </div>
       </div>
 
-      {/* Subtitle */}
-      <p className="mt-2 text-sm text-gray-500">
-        {subtitle}
-      </p>
+      <p className="mt-2 text-sm text-gray-500">{test.subtitle}</p>
 
-      {/* Delivery Time */}
       <div className="mt-3 flex items-center gap-1.5 text-xs text-gray-500">
         <ClockIcon />
-
-        <span>Reports in {deliversIn}</span>
+        <span>Reports in 24hrs</span>
       </div>
 
-      {/* Bottom Section */}
       <div className="mt-auto flex items-center justify-between pt-5">
-        <div className="text-xl font-bold text-black">
-          ₹{price}
-        </div>
+        <div className="text-xl font-bold text-black">₹ {test.price}</div>
 
         <Link
-          href="/book?test=cbc"
+          href="/book"
           className="inline-flex items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-blue-700"
         >
           Book Now
@@ -149,10 +67,6 @@ function TestCard({
     </div>
   );
 }
-
-/* =========================
-   ICONS
-========================= */
 
 function ClockIcon() {
   return (

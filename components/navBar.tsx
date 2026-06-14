@@ -91,7 +91,7 @@ export default function NavBar() {
         </Link>
 
         <Link
-          href="/signup"
+          href="/api/auth/signup"
           className="border border-gray-300 text-base px-5 py-1.5 rounded-full hover:bg-[#447324] hover:text-white hover:translate-y-1 transition duration-500 "
         >
           Sign Up

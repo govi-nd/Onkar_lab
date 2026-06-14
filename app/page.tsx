@@ -43,7 +43,7 @@ function HomePageFirstDiv() {
           </Link>
 
           <Link
-            href="/test"
+            href="/tests"
             className=" px-5 py-1.5 rounded-full  text-black rounded hover:-translate-y-1 transition duration-200 hover:bg-[#447324] hover:text-white"
           >
             View All Tests
