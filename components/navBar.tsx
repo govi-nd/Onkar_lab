@@ -4,10 +4,8 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-
   DialogContent,
   DialogDescription,
-
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -16,9 +14,8 @@ import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-;
+import { signIn } from "next-auth/react";
 export default function NavBar() {
-  
   const pathname = usePathname();
   return (
     <div className="h-16 w-full border-b border-gray-200 flex items-center px-8 justify-around">
@@ -96,9 +93,8 @@ export default function NavBar() {
 
       {/* Auth Buttons */}
       <div className="flex items-center gap-2">
-        <LoginDialog/>
-        <SignUpDialog/>
-
+        <LoginDialog />
+        <SignUpDialog />
       </div>
     </div>
   );
@@ -137,7 +133,16 @@ function LoginDialog() {
               <div className="h-px flex-1 bg-gray-300"></div>
             </div>
 
-            <Button className="text-center" variant={"mygreen"}>
+            <Button
+              type="button"
+              onClick={() =>
+                signIn("google", {
+                  callbackUrl: "/",
+                })
+              }
+              className="text-center"
+              variant={"mygreen"}
+            >
               Sign in with Google
             </Button>
           </FieldGroup>
@@ -152,7 +157,6 @@ function LoginDialog() {
     </Dialog>
   );
 }
-
 
 function SignUpDialog() {
   const [open, setOpen] = useState(false);
@@ -190,7 +194,7 @@ function SignUpDialog() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen} >
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">Sign up</Button>
       </DialogTrigger>
@@ -201,18 +205,13 @@ function SignUpDialog() {
             <DialogTitle className="text-2xl font-extrabold">
               Welcome
             </DialogTitle>
-            <DialogDescription>
-              Sign up to continue
-            </DialogDescription>
+            <DialogDescription>Sign up to continue</DialogDescription>
           </DialogHeader>
 
           <FieldGroup>
             <Field>
               <Label>Name</Label>
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
+              <Input value={name} onChange={(e) => setName(e.target.value)} />
             </Field>
 
             <Field>
@@ -242,11 +241,27 @@ function SignUpDialog() {
               />
             </Field>
 
-            <Button
-              type="submit"
-              className="bg-blue-700 hover:bg-blue-500"
-            >
+            <Button type="submit" className="bg-blue-700 hover:bg-blue-500">
               Sign Up
+            </Button>
+            <div className="flex items-center gap-3">
+              <div className="h-px flex-1 bg-gray-300"></div>
+
+              <span className="text-sm text-gray-500">or continue with</span>
+
+              <div className="h-px flex-1 bg-gray-300"></div>
+            </div>
+            <Button
+              type="button"
+              onClick={() =>
+                signIn("google", {
+                  callbackUrl: "/",
+                })
+              }
+              className="text-center"
+              variant={"mygreen"}
+            >
+              Sign in with Google
             </Button>
           </FieldGroup>
         </form>

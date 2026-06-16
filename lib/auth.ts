@@ -2,6 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
+import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -64,8 +65,41 @@ export const authOptions: NextAuthOptions = {
         };
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+    }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        const email = user.email?.trim().toLowerCase();
+
+        if (!email) {
+          return false;
+        }
+
+        let dbUser = await prisma.user.findUnique({
+          where: {
+            email,
+          },
+        });
+
+        if (!dbUser) {
+          dbUser = await prisma.user.create({
+            data: {
+              name: user.name ?? "",
+              email,
+            },
+          });
+        }
+
+        user.id = dbUser.id;
+      }
+
+      return true;
+    },
+
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -73,6 +107,7 @@ export const authOptions: NextAuthOptions = {
 
       return token;
     },
+
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
