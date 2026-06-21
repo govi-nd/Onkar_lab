@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import TestsCatalog from "./tests-catalog";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const testDetails = await prisma.test.findMany({
     select: {
