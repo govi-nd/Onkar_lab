@@ -15,29 +15,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useCart } from "@/components/cartContext";
+import { Activity } from "lucide-react";
 export default function NavBar() {
   const pathname = usePathname();
+   const { cart } = useCart();
   return (
     <div className="h-16 w-full border-b border-gray-200 flex items-center px-8 justify-around">
       {/* Logo + Name */}
-      <div className="flex items-center gap-1">
-        <div className="h-16 w-8  flex items-center justify-center gap-2">
-          <svg
-            viewBox="0 0 60 72"
-            width="42"
-            height="88"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M30,4 C30,4 6,30 6,46 C6,59 17,68 30,68 C43,68 54,59 54,46 C54,30 30,4 30,4 Z"
-              fill="#0d6efd"
-            />
-            <rect x="25" y="28" width="10" height="28" rx="2" fill="#ffffff" />
-            <rect x="16" y="37" width="28" height="10" rx="2" fill="#ffffff" />
-          </svg>
-        </div>
-        <span className="text-3xl font-bold text-[#0d2b45]">Onkar Labs</span>
-      </div>
+      <div className="flex items-center gap-2">
+            <Link href="/" className="flex flex-row gap-2 items-center">
+            <span className="grid h-10 w-10 place-items-center bg-blue-600 rounded-lg  text-primary-foreground">
+              <Activity className="h-5 w-5 " />
+            </span>
+            <span className="text-xl font-bold text-foreground">
+              Onkar Lab Diagnostics
+            </span>
+            </Link>
+
+            
+          </div>
 
       {/* /* Nav Links */}
       <div className="flex items-center gap-8 text-lg font-medium ">
@@ -65,7 +62,7 @@ export default function NavBar() {
         >
           Tests
         </Link>
-        <Link
+        {/* <Link
           href="/book"
           className={` 
     ${pathname === "/book" ? "text-blue-600 font-bold" : "text-gray-600"}
@@ -76,7 +73,7 @@ export default function NavBar() {
   `}
         >
           Book Appointment
-        </Link>
+        </Link> */}
         <Link
           href="/contact"
           className={` 
@@ -95,6 +92,28 @@ export default function NavBar() {
       <div className="flex items-center gap-2">
         <LoginDialog />
         <SignUpDialog />
+        <div className="ml-2">
+          <Link href="/book" className="relative inline-block">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="size-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+              />
+            </svg>
+
+            <div className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-blue-800 text-xs text-white">
+              {cart.length}
+            </div>
+          </Link>
+        </div>
       </div>
     </div>
   );

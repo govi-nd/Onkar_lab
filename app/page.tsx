@@ -5,6 +5,7 @@ export default function Home() {
     <>
       <HomePageFirstDiv />
       <HomePageSecDiv />
+      <HowItWorks/>
     </>
   );
 }
@@ -37,14 +38,14 @@ function HomePageFirstDiv() {
         <div className=" mt-4  flex  items-start justify-center gap-3 ">
           <Link
             href="/book"
-            className="px-5 py-1.5 rounded-full  bg-blue-500 text-white rounded hover:-translate-y-1 transition duration-200"
+            className="px-5 py-1.5 rounded-full  bg-blue-500 text-white hover:-translate-y-1 transition duration-200"
           >
             Book a Test
           </Link>
 
           <Link
             href="/tests"
-            className=" px-5 py-1.5 rounded-full  text-black rounded hover:-translate-y-1 transition duration-200 hover:bg-[#447324] hover:text-white"
+            className=" px-5 py-1.5 rounded-full  text-black hover:-translate-y-1 transition duration-200 hover:bg-[#447324] hover:text-white"
           >
             View All Tests
           </Link>
@@ -158,4 +159,124 @@ function FeatureCard({ icon, title, subtitle }: FeatureCardProps) {
       </div>
     </div>
   );
+}
+
+function HowItWorks (){
+  return (
+    <>
+            <div className="bg-[#F4F8FD]">
+
+      
+      <div className="mx-auto max-w-6xl px-4 py-16 bg-[#F4F8FD] sm:px-6">
+        <div className="text-center bg-[#F4F8FD]">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            How it works
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Three simple steps from booking to report.
+          </p>
+        </div>
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
+          <div className="relative rounded-xl border border-border bg-card p-6">
+            <div className="absolute right-5 top-5 text-xs font-semibold text-muted-foreground">
+              01
+            </div>
+            <span className="grid h-12 w-12 place-items-center rounded-lg bg-accent/10 text-accent">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-clipboard-list h-6 w-6"
+                aria-hidden="true"
+              >
+                <rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <path d="M12 11h4"></path>
+                <path d="M12 16h4"></path>
+                <path d="M8 11h.01"></path>
+                <path d="M8 16h.01"></path>
+              </svg>
+            </span>
+            <h3 className="mt-4 text-lg font-semibold text-foreground">
+              Choose Test
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Browse 50+ accredited lab tests.
+            </p>
+          </div>
+          <div className="relative rounded-xl border border-border bg-card p-6">
+            <div className="absolute right-5 top-5 text-xs font-semibold text-muted-foreground">
+              02
+            </div>
+            <span className="grid h-12 w-12 place-items-center rounded-lg bg-accent/10 text-accent">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-calendar-check h-6 w-6"
+                aria-hidden="true"
+              >
+                <path d="M8 2v4"></path>
+                <path d="M16 2v4"></path>
+                <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                <path d="M3 10h18"></path>
+                <path d="m9 16 2 2 4-4"></path>
+              </svg>
+            </span>
+            <h3 className="mt-4 text-lg font-semibold text-foreground">
+              Book Slot
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Pick a time and pay securely online.
+            </p>
+          </div>
+          <div className="relative rounded-xl border border-border bg-card p-6">
+            <div className="absolute right-5 top-5 text-xs font-semibold text-muted-foreground">
+              03
+            </div>
+            <span className="grid h-12 w-12 place-items-center rounded-lg bg-accent/10 text-accent">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-file-text h-6 w-6"
+                aria-hidden="true"
+              >
+                <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path>
+                <path d="M14 2v5a1 1 0 0 0 1 1h5"></path>
+                <path d="M10 9H8"></path>
+                <path d="M16 13H8"></path>
+                <path d="M16 17H8"></path>
+              </svg>
+            </span>
+            <h3 className="mt-4 text-lg font-semibold text-foreground">
+              Get Report
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Digitally signed reports within 24 hours.
+            </p>
+          </div>
+        </div>
+      </div>
+      </div>
+    </>
+  )
 }

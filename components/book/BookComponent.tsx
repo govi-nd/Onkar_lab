@@ -1,11 +1,14 @@
 "use client";
 
+import { useCart } from "@/components/cartContext";
 import { useState } from "react";
 
 export type TestOption = {
   id: string;
   title: string;
+  subtitle?: string;
   price: number;
+  category?: string;
 };
 
 type BookComponentProps = {
@@ -13,6 +16,7 @@ type BookComponentProps = {
 };
 
 export default function BookComponent({ tests }: BookComponentProps) {
+  const { cart, addToCart, removeFromCart } = useCart();
   const [selectedSlot, setSelectedslot] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const formattedDate = selectedDate
@@ -23,27 +27,33 @@ export default function BookComponent({ tests }: BookComponentProps) {
       })
     : "";
 
-  const [selectedTests, setSelectedTests] = useState<string[]>([]);
-
   const handleAddTest = (testId: string) => {
-    if (!selectedTests.includes(testId)) {
-      setSelectedTests([...selectedTests, testId]);
+    const test = tests.find((test) => test.id === testId);
+    const alreadyInCart = cart.some((item) => item.id === testId);
+
+    if (test && !alreadyInCart) {
+      addToCart({
+        id: test.id,
+        title: test.title,
+        subtitle: test.subtitle ?? "",
+        price: test.price,
+        category: test.category ?? "",
+      });
     }
   };
 
   const removeTest = (testId: string) => {
-    setSelectedTests(selectedTests.filter((id) => id !== testId));
+    removeFromCart(testId);
   };
 
   const selectedTestObjects = tests.filter((test) =>
-    selectedTests.includes(test.id),
+    cart.some((item) => item.id === test.id),
   );
 
   const total = selectedTestObjects.reduce((sum, test) => sum + test.price, 0);
 
   return (
     <>
-      {/* Header */}
       <div className="mt-4 text-center">
         <div className="mx-auto flex w-fit items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-600">
           <svg
@@ -71,42 +81,40 @@ export default function BookComponent({ tests }: BookComponentProps) {
           Schedule your test
         </h1>
 
-        <p className="mt-2 text-gray-500 ">Pay securely</p>
+        <p className="mt-2 text-gray-500">Pay securely</p>
       </div>
 
-      {/* Main Layout */}
       <div className="mt-8 flex justify-center">
-        <div className="grid grid-cols-[520px_320px] gap-12 items-start">
-          {/* Form */}
+        <div className="grid grid-cols-[520px_320px] items-start gap-12">
           <form
             noValidate
             className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm"
           >
-            {/* Select Test */}
             <div className="mb-4">
               <label className="mb-2 block text-sm font-medium text-gray-700">
                 Select Tests
               </label>
 
-              {/* Selected Tags */}
               <div className="mb-3 flex flex-wrap gap-2">
                 {selectedTestObjects.map((test) => (
                   <div
                     key={test.id}
                     className="flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700"
                   >
-                    <span >{test.title}</span>
+                    <span>{test.title}</span>
 
                     <button
                       type="button"
                       onClick={() => removeTest(test.id)}
-                      className="font-medium cursor-pointer"
-                    >×</button>
+                      className="cursor-pointer font-medium"
+                      aria-label={`Remove ${test.title}`}
+                    >
+                      x
+                    </button>
                   </div>
                 ))}
               </div>
 
-              {/* Dropdown */}
               <select
                 defaultValue=""
                 onChange={(e) => {
@@ -121,13 +129,12 @@ export default function BookComponent({ tests }: BookComponentProps) {
 
                 {tests.map((test) => (
                   <option key={test.id} value={test.id}>
-                    {test.title} — ₹{test.price}
+                    {test.title} - Rs. {test.price}
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Full Name */}
             <div className="mb-4">
               <label className="mb-2 block text-sm font-medium text-gray-700">
                 Full Name
@@ -135,12 +142,11 @@ export default function BookComponent({ tests }: BookComponentProps) {
 
               <input
                 type="text"
-                placeholder="e.g. Govind "
+                placeholder="e.g. Govind"
                 className="w-full rounded-lg border border-gray-300 p-3"
               />
             </div>
 
-            {/* Phone + Email */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -167,7 +173,6 @@ export default function BookComponent({ tests }: BookComponentProps) {
               </div>
             </div>
 
-            {/* Date + Slot */}
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -183,7 +188,7 @@ export default function BookComponent({ tests }: BookComponentProps) {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 ">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Time Slot
                 </label>
 
@@ -194,7 +199,7 @@ export default function BookComponent({ tests }: BookComponentProps) {
                   }}
                   className="w-full rounded-lg border border-gray-300 p-3"
                 >
-                  <option>Select Slot</option>
+                  <option value="">Select Slot</option>
                   <option>09:00 AM - 11:00 AM</option>
                   <option>11:00 AM - 1:00 PM</option>
                   <option>01:00 PM - 03:00 PM</option>
@@ -204,7 +209,6 @@ export default function BookComponent({ tests }: BookComponentProps) {
               </div>
             </div>
 
-            {/* Notes */}
             <div className="mt-4">
               <label className="mb-2 block text-sm font-medium text-gray-700">
                 Special Notes (optional)
@@ -217,12 +221,11 @@ export default function BookComponent({ tests }: BookComponentProps) {
               />
             </div>
 
-            {/* Button */}
             <button
               type="submit"
               className="mt-6 w-full rounded-lg bg-blue-600 py-3 font-medium text-white transition hover:bg-blue-700"
             >
-              Pay ₹{total} via Razorpay
+              Pay Rs. {total} via Razorpay
             </button>
 
             <p className="mt-4 text-center text-xs text-gray-500">
@@ -230,7 +233,6 @@ export default function BookComponent({ tests }: BookComponentProps) {
             </p>
           </form>
 
-          {/* Summary */}
           <aside className="sticky top-24 h-fit rounded-2xl border border-gray-200 bg-gray-50 p-6">
             <h3 className="text-lg font-semibold text-gray-900">
               Order Summary
@@ -242,7 +244,7 @@ export default function BookComponent({ tests }: BookComponentProps) {
 
                 <div className="mt-2 space-y-2">
                   {selectedTestObjects.length === 0 ? (
-                    <p className="text-gray-400 ">No tests selected</p>
+                    <p className="text-gray-400">No tests selected</p>
                   ) : (
                     selectedTestObjects.map((test) => (
                       <div
@@ -250,7 +252,7 @@ export default function BookComponent({ tests }: BookComponentProps) {
                         className="flex justify-between font-bold"
                       >
                         <span>{test.title}</span>
-                        <span>₹{test.price}</span>
+                        <span>Rs. {test.price}</span>
                       </div>
                     ))
                   )}
@@ -259,12 +261,12 @@ export default function BookComponent({ tests }: BookComponentProps) {
 
               <div className="flex justify-between">
                 <span className="text-gray-500">Date</span>
-                <span className="font-medium">{formattedDate || "—"}</span>
+                <span className="font-medium">{formattedDate || "-"}</span>
               </div>
 
               <div className="flex justify-between">
                 <span className="text-gray-500">Slot</span>
-                <span className="font-medium">{selectedSlot}</span>
+                <span className="font-medium">{selectedSlot || "-"}</span>
               </div>
 
               <hr />
@@ -272,7 +274,7 @@ export default function BookComponent({ tests }: BookComponentProps) {
               <div className="flex justify-between">
                 <span className="text-gray-500">Total</span>
 
-                <span className="text-2xl font-bold">₹{total}</span>
+                <span className="text-2xl font-bold">Rs. {total}</span>
               </div>
             </div>
 
