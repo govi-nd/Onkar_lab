@@ -15,12 +15,21 @@ import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Suspense, useEffect, useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { useCart } from "@/components/cartContext";
-import { Activity } from "lucide-react";
+import { Activity, User } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 export default function NavBar() {
   const pathname = usePathname();
-   const { cart } = useCart();
+  const { cart } = useCart();
+  const { data: session, status } = useSession();
   return (
     <div className="h-16 w-full border-b border-gray-200 flex items-center px-8 justify-around">
       {/* Logo + Name */}
@@ -91,10 +100,35 @@ export default function NavBar() {
 
       {/* Auth Buttons */}
       <div className="flex items-center gap-2">
-        <Suspense fallback={<Button variant="outline">Login</Button>}>
-          <LoginDialog />
-        </Suspense>
-        <SignUpDialog />
+        {status === "loading" ? (
+          <div className="w-20 h-10 animate-pulse bg-gray-200 rounded-md"></div>
+        ) : status === "authenticated" ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <User className="h-4 w-4" />
+                Profile
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/profile">My Details</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => signOut()}>
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <>
+            <Suspense fallback={<Button variant="outline">Login</Button>}>
+              <LoginDialog />
+            </Suspense>
+            <SignUpDialog />
+          </>
+        )}
         <div className="ml-2">
           <Link href="/book" className="relative inline-block">
             <svg
@@ -164,6 +198,7 @@ export default function NavBar() {
 
     router.refresh();
     router.push(currentUrl);
+    setOpen(false);
     alert("You Sign in successfully");
   
   };

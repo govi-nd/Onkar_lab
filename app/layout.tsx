@@ -7,6 +7,8 @@ import { Footer } from "@/components/footer";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
+import { Providers } from "@/components/Providers";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -15,11 +17,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("font-sans", geist.variable)}>
       <body>
-        <CartProvider>
-        <NavBar />
-        {children}
-        <Footer/>
-        </CartProvider>
+        <Providers>
+          <CartProvider>
+            <NavBar />
+            {children}
+            <Footer/>
+          </CartProvider>
+        </Providers>
       </body>
     </html>
   );
