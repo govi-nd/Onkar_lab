@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 import type React from "react";
 import {
   Select,
@@ -436,11 +437,11 @@ function TestDialogBox() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data?.message || "Error creating test");
+        toast.error(data?.message || "Error creating test");
         return;
       }
 
-      alert("Test added");
+      toast.success("Test added");
       setTitle("");
       setSubtitle("");
       setCategory("");
@@ -448,7 +449,7 @@ function TestDialogBox() {
       setOpen(false);
     } catch (err) {
       console.error(err);
-      alert("Something went wrong while creating the test");
+      toast.error("Something went wrong while creating the test");
     } finally {
       setSubmitting(false);
     }
@@ -545,14 +546,14 @@ function ManageBookingsDialog({
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data?.message || "Could not update booking status");
+        toast.error(data?.message || "Could not update booking status");
         return;
       }
 
       onUpdated();
     } catch (err) {
       console.error(err);
-      alert("Something went wrong while updating booking status");
+      toast.error("Something went wrong while updating booking status");
     } finally {
       setUpdatingId(null);
     }
@@ -812,11 +813,11 @@ function ReportDialogBox({
     e.preventDefault();
 
     if (!bookingId) {
-      alert("Please select a booking");
+      toast.warning("Please select a booking");
       return;
     }
     if (!file) {
-      alert("Please choose a report file");
+      toast.warning("Please choose a report file");
       return;
     }
 
@@ -836,17 +837,17 @@ function ReportDialogBox({
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        alert(data?.message || "Failed to upload report");
+        toast.error(data?.message || "Failed to upload report");
         return;
       }
 
-      alert("Report uploaded successfully");
+      toast.success("Report uploaded successfully");
       resetForm();
       setOpen(false);
       onUploaded();
     } catch (err) {
       console.error(err);
-      alert("Something went wrong while uploading the report");
+      toast.error("Something went wrong while uploading the report");
     } finally {
       setUploading(false);
     }

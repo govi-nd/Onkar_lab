@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 
 import {
   Select,
@@ -43,7 +44,7 @@ export default function Report() {
 
         if (res.status === 401) {
           window.location.href = "/?login=true";
-          alert("First Login")
+          toast.warning("First Login");
           return;
         }
 

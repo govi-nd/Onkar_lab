@@ -8,6 +8,7 @@ import { Footer } from "@/components/footer";
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 import { Providers } from "@/components/Providers";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function RootLayout({
   children,
@@ -24,6 +25,7 @@ export default function RootLayout({
             <Footer/>
           </CartProvider>
         </Providers>
+        <Toaster />
       </body>
     </html>
   );

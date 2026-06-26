@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -199,7 +200,7 @@ export default function NavBar() {
     router.refresh();
     router.push(currentUrl);
     setOpen(false);
-    alert("You Sign in successfully");
+    toast.success("You Sign in successfully");
   
   };
 
@@ -315,12 +316,12 @@ function SignUpDialog() {
     const data = await response.json();
 
     if (!response.ok) {
-      alert(data.error);
+      toast.error(data.error);
       return;
       setOpen(false);
     }
 
-    alert("User created successfully");
+    toast.success("User created successfully");
     setOpen(false);
   }
 
