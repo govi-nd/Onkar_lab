@@ -43,13 +43,11 @@ export async function POST(req: Request) {
 
     const filePath = `${bookingId}-${Date.now()}-${file.name}`;
 
-    // Convert the File object to a Buffer to ensure compatibility with Supabase storage upload in Node.js environments
     const arrayBuffer = await file.arrayBuffer();
-    const fileBuffer = Buffer.from(arrayBuffer);
 
     const { error } = await supabase.storage
       .from("reports")
-      .upload(filePath, fileBuffer, {
+      .upload(filePath, arrayBuffer, {
         contentType: "application/pdf",
         upsert: true,
       });
@@ -96,11 +94,11 @@ export async function POST(req: Request) {
       success: true,
       url: data.publicUrl,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("Exception caught in upload route handler:", err);
 
     return Response.json(
-      { message: "Internal server error" },
+      { message: "Internal server error: " + (err.message || String(err)) },
       { status: 500 }
     );
   }
