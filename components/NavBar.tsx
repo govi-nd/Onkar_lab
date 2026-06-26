@@ -1,6 +1,7 @@
 "use client";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,7 +14,7 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useCart } from "@/components/cartContext";
 import { Activity } from "lucide-react";
@@ -62,18 +63,18 @@ export default function NavBar() {
         >
           Tests
         </Link>
-        {/* <Link
-          href="/book"
+        <Link
+          href="/report"
           className={` 
-    ${pathname === "/book" ? "text-blue-600 font-bold" : "text-gray-600"}
+    ${pathname === "/report" ? "text-blue-600 font-bold" : "text-gray-600"}
     hover:text-[#0d6efd]
     hover:translate-y-1
     transition
     duration-300
   `}
         >
-          Book Appointment
-        </Link> */}
+          Reports
+        </Link>
         <Link
           href="/contact"
           className={` 
@@ -90,7 +91,9 @@ export default function NavBar() {
 
       {/* Auth Buttons */}
       <div className="flex items-center gap-2">
-        <LoginDialog />
+        <Suspense fallback={<Button variant="outline">Login</Button>}>
+          <LoginDialog />
+        </Suspense>
         <SignUpDialog />
         <div className="ml-2">
           <Link href="/book" className="relative inline-block">
@@ -118,61 +121,135 @@ export default function NavBar() {
     </div>
   );
 }
-function LoginDialog() {
+
+ function LoginDialog() {
+   const searchParams = useSearchParams();
+   const currentUrl = usePathname();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("login") === "true") {
+      setOpen(true);
+    }
+  }, [searchParams]);
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleLogin = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+
+    setLoading(true);
+    setError("");
+
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    setLoading(false);
+
+    if (result?.error) {
+      setError("Invalid email or password");
+  
+      return;
+    }
+
+    router.refresh();
+    router.push(currentUrl);
+    alert("You Sign in successfully");
+  
+  };
+
   return (
-    <Dialog>
-      <form>
-        <DialogTrigger asChild>
-          <Button variant="outline">Login</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-sm">
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline">Login</Button>
+      </DialogTrigger>
+
+      <DialogContent className="sm:max-w-sm">
+        <form onSubmit={handleLogin}>
           <DialogHeader>
-            <DialogTitle className="font-extrabold text-2xl">
-              Welcom back
+            <DialogTitle className="text-2xl font-extrabold">
+              Welcome back
             </DialogTitle>
+
             <DialogDescription className="text-muted-foreground">
               Sign in to access your reports and appointments
             </DialogDescription>
           </DialogHeader>
-          <FieldGroup>
+
+          <FieldGroup className="mt-6 space-y-4">
             <Field>
               <Label htmlFor="email">Email</Label>
-              <Input id="email" name="name" placeholder="Govind Prashar" />
+
+              <Input
+                id="email"
+                type="email"
+                placeholder="govind@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </Field>
+
             <Field>
               <Label htmlFor="password">Password</Label>
-              <Input id="password" placeholder="enter strong password" />
+
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </Field>
-            <Button className="bg-blue-700 hover:bg-blue-500">Sign in</Button>
+
+            {error && (
+              <p className="text-sm text-red-500">{error}</p>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full bg-blue-700 hover:bg-blue-600"
+              disabled={loading}
+            >
+              {loading ? "Signing in..." : "Sign in"}
+            </Button>
+
             <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-gray-300"></div>
+              <div className="h-px flex-1 bg-gray-300" />
 
-              <span className="text-sm text-gray-500">or continue with</span>
+              <span className="text-sm text-gray-500">
+                or continue with
+              </span>
 
-              <div className="h-px flex-1 bg-gray-300"></div>
+              <div className="h-px flex-1 bg-gray-300" />
             </div>
 
             <Button
               type="button"
+              variant="mygreen"
+              className="w-full"
               onClick={() =>
                 signIn("google", {
                   callbackUrl: "/",
                 })
               }
-              className="text-center"
-              variant={"mygreen"}
             >
               Sign in with Google
             </Button>
           </FieldGroup>
-          {/* <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button type="submit">Save changes</Button>
-          </DialogFooter> */}
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 }
@@ -187,7 +264,7 @@ function SignUpDialog() {
   async function createUser(e: React.FormEvent) {
     e.preventDefault();
 
-    const response = await fetch("/signup", {
+    const response = await fetch("/api/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

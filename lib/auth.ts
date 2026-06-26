@@ -1,19 +1,22 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
-import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
+
   pages: {
-    signIn: "/login",
+    signIn: "/",
   },
+
   providers: [
     CredentialsProvider({
       name: "Credentials",
+
       credentials: {
         email: {
           label: "Email",
@@ -25,6 +28,7 @@ export const authOptions: NextAuthOptions = {
           type: "password",
         },
       },
+
       async authorize(credentials) {
         const email = credentials?.email?.trim().toLowerCase();
         const password = credentials?.password;
@@ -45,13 +49,13 @@ export const authOptions: NextAuthOptions = {
           },
         });
 
-        if (!user?.passwordHash) {
+        if (!user || !user.passwordHash) {
           return null;
         }
 
         const isValidPassword = await bcrypt.compare(
           password,
-          user.passwordHash,
+          user.passwordHash
         );
 
         if (!isValidPassword) {
@@ -65,11 +69,13 @@ export const authOptions: NextAuthOptions = {
         };
       },
     }),
+
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     }),
   ],
+
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
@@ -100,7 +106,7 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
 
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
       }
@@ -108,7 +114,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
 
-    session({ session, token }) {
+    async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
       }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import CategoryFilter from "./category";
+import CategoryFilter from "@/components/tests/CategoryFilter";
 import { useCart } from "@/components/cartContext";
 
 export type TestDetails = {
@@ -98,7 +98,7 @@ export default function TestsCatalog({
 function TestCard({ test }: { test: TestDetails }) {
   const { cart, addToCart, removeFromCart } = useCart();
 
-const isInCart = cart.some((item) => item.id === test.id);
+  const isInCart = cart.some((item) => item.id === test.id);
 
   return (
     <div className="flex h-full w-full flex-col rounded-xl border border-gray-200 bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
@@ -120,26 +120,24 @@ const isInCart = cart.some((item) => item.id === test.id);
       </div>
 
       <div className="mt-auto flex items-center justify-between pt-5">
-  <div className="text-xl font-bold text-black">
-    ₹ {test.price}
-  </div>
+        <div className="text-xl font-bold text-black">₹ {test.price}</div>
 
-  {isInCart ? (
-    <button
-      onClick={() => removeFromCart(test.id)}
-      className="inline-flex items-center justify-center rounded-md bg-red-600 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-red-700"
-    >
-      Remove from Cart
-    </button>
-  ) : (
-    <button
-      onClick={() => addToCart(test)}
-      className="inline-flex items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-blue-700"
-    >
-      Add to Cart
-    </button>
-  )}
-</div>
+        {isInCart ? (
+          <button
+            onClick={() => removeFromCart(test.id)}
+            className="inline-flex items-center justify-center rounded-md bg-red-600 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-red-700"
+          >
+            Remove from Cart
+          </button>
+        ) : (
+          <button
+            onClick={() => addToCart(test)}
+            className="inline-flex items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-blue-700"
+          >
+            Add to Cart
+          </button>
+        )}
+      </div>
     </div>
   );
 }

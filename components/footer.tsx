@@ -60,7 +60,7 @@ export function Footer() {
 
             <li>
               <Link
-                href="/reports"
+                href="/report"
                 className="transition-colors hover:text-primary"
               >
                 Download Reports

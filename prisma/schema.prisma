@@ -1,5 +1,3 @@
-
-
 generator client {
   provider = "prisma-client"
   output   = "../lib/generated/prisma"
@@ -7,91 +5,103 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-
 }
-
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String  @unique
-  phone     String?  @unique
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  phone        String?   @unique
   passwordHash String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  bookings  Booking[]
-
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  role         Role      @default(USER)
+  bookings     Booking[]
 }
 
-
-
 model Test {
-  id          String @id @default(cuid())
-  title       String
-  subtitle    String @unique
-  price       Int
-  category    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
+  id           String        @id @default(cuid())
+  title        String
+  subtitle     String        @unique
+  price        Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  category     String
   bookingTests BookingTest[]
 }
 
 model Booking {
-  id              String @id @default(cuid())
-
+  id              String        @id @default(cuid())
   userId          String
-
   appointmentDate DateTime
-  
   slot            String
-
   totalAmount     Int
 
   paymentStatus   PaymentStatus @default(PENDING)
+  bookingStatus   BookingStatus @default(BOOKED)
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
-
-  tests BookingTest[]
-
-  payment Payment?
+  user            User          @relation(fields: [userId], references: [id])
+  tests           BookingTest[]
+  payment         Payment?
+  report          Report?
+}
+enum BookingStatus {
+  BOOKED
+  SAMPLE_COLLECTED
+  REPORT_READY
+  COMPLETED
+  CANCELLED
 }
 
 model BookingTest {
   bookingId String
   testId    String
-
-  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  test    Test    @relation(fields: [testId], references: [id])
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  test      Test    @relation(fields: [testId], references: [id])
 
   @@id([bookingId, testId])
 }
 
 model Payment {
-  id String @id @default(cuid())
-
-  bookingId String @unique
-
+  id                String        @id @default(cuid())
+  bookingId         String        @unique
   razorpayOrderId   String?
   razorpayPaymentId String?
+  amount            Int
+  status            PaymentStatus @default(PENDING)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  booking           Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
 
-  amount Int
+model Report {
+  id         String       @id @default(cuid())
+  bookingId  String       @unique
+  fileUrl    String
+  fileName   String
+  remarks    String?
+  status     ReportStatus @default(PENDING)
+  uploadedAt DateTime?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  booking    Booking      @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
 
-  status PaymentStatus @default(PENDING)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+enum Role {
+  USER
+  ADMIN
 }
 
 enum PaymentStatus {
   PENDING
   SUCCESS
   FAILED
+}
+
+enum ReportStatus {
+  PENDING
+  UPLOADED
 }
