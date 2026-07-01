@@ -42,7 +42,7 @@ export default function NavBar() {
         {/* Logo + Name */}
         <div className="flex items-center gap-2">
           <Link href="/" className="flex flex-row gap-2 items-center" onClick={() => setIsMobileMenuOpen(false)}>
-            <Logo className="h-20 w-auto" />
+            <Logo className="h-10 sm:h-12 md:h-16 lg:h-20 w-auto transition-all" />
           </Link>
         </div>
 
