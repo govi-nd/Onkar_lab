@@ -101,7 +101,7 @@ export function Footer() {
 
             <li className="flex items-center gap-3">
               <Mail className="h-4 w-4 shrink-0" />
-              <span>hello@medilab.in</span>
+              <span>hello@onkarlabs.com</span>
             </li>
           </ul>
         </div>
@@ -111,7 +111,7 @@ export function Footer() {
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-4 text-center text-xs text-muted-foreground sm:flex-row sm:px-6">
           <p>
-            © {new Date().getFullYear()} MediLab Diagnostics. All rights
+            © {new Date().getFullYear()} Onkar Lab Diagnostics. All rights
             reserved.
           </p>
 

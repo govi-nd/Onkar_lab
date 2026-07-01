@@ -1,7 +1,10 @@
 "use client";
 
 import { useCart } from "@/components/cartContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { PACKAGES } from "@/lib/packages-data";
+import { toast } from "sonner";
 
 export type TestOption = {
   id: string;
@@ -15,42 +18,78 @@ type BookComponentProps = {
   tests: TestOption[];
 };
 
+const formatDate = (dateString: string) => {
+  if (!dateString) return "";
+  const parts = dateString.split("-");
+  if (parts.length === 3) {
+    const [year, month, day] = parts;
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    const mIdx = parseInt(month, 10) - 1;
+    if (mIdx >= 0 && mIdx < 12) {
+      return `${parseInt(day, 10)} ${months[mIdx]} ${year}`;
+    }
+  }
+  return dateString;
+};
+
 export default function BookComponent({ tests }: BookComponentProps) {
   const { cart, addToCart, removeFromCart } = useCart();
   const [selectedSlot, setSelectedslot] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
-  const formattedDate = selectedDate
-    ? new Date(selectedDate).toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
-    : "";
+  const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [notes, setNotes] = useState("");
+
+  const searchParams = useSearchParams();
+  const testParam = searchParams ? searchParams.get("test") : null;
+
+  const allAvailableItems = [
+    ...tests,
+    ...PACKAGES.map(p => ({
+      id: p.id,
+      title: p.name,
+      subtitle: p.tagline,
+      price: p.price,
+      category: "Package"
+    }))
+  ];
+
+  const formattedDate = formatDate(selectedDate);
 
   const handleAddTest = (testId: string) => {
-    const test = tests.find((test) => test.id === testId);
-    const alreadyInCart = cart.some((item) => item.id === testId);
+    const item = allAvailableItems.find((t) => t.id === testId);
+    const alreadyInCart = cart.some((c) => c.id === testId);
 
-    if (test && !alreadyInCart) {
+    if (item && !alreadyInCart) {
       addToCart({
-        id: test.id,
-        title: test.title,
-        subtitle: test.subtitle ?? "",
-        price: test.price,
-        category: test.category ?? "",
+        id: item.id,
+        title: item.title,
+        subtitle: item.subtitle ?? "",
+        price: item.price,
+        category: item.category ?? "",
       });
     }
   };
+
+  useEffect(() => {
+    if (testParam) {
+      handleAddTest(testParam);
+    }
+  }, [testParam]);
 
   const removeTest = (testId: string) => {
     removeFromCart(testId);
   };
 
-  const selectedTestObjects = tests.filter((test) =>
-    cart.some((item) => item.id === test.id),
+  const selectedTestObjects = allAvailableItems.filter((item) =>
+    cart.some((cartItem) => cartItem.id === item.id),
   );
 
-  const total = selectedTestObjects.reduce((sum, test) => sum + test.price, 0);
+  const total = selectedTestObjects.reduce((sum, item) => sum + item.price, 0);
 
   return (
     <>
@@ -84,15 +123,53 @@ export default function BookComponent({ tests }: BookComponentProps) {
         <p className="mt-2 text-gray-500">Pay securely</p>
       </div>
 
-      <div className="mt-8 flex justify-center">
-        <div className="grid grid-cols-[520px_320px] items-start gap-12">
+      <div className="mt-8 flex justify-center px-4 md:px-0 max-w-full">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] lg:grid-cols-[520px_320px] items-start gap-6 lg:gap-12 w-full max-w-4xl">
           <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (cart.length === 0) {
+                toast.error("Please add at least one test or package to book.");
+                return;
+              }
+              if (!fullName.trim()) {
+                toast.error("Please enter your full name.");
+                return;
+              }
+              if (!phoneNumber.trim()) {
+                toast.error("Please enter your phone number.");
+                return;
+              }
+              if (!email.trim()) {
+                toast.error("Please enter your email address.");
+                return;
+              }
+              if (!selectedDate) {
+                toast.error("Please select your preferred date.");
+                return;
+              }
+              if (!selectedSlot) {
+                toast.error("Please select a time slot.");
+                return;
+              }
+
+              toast.success(`Booking successfully scheduled for ${fullName}! Order Total: ₹${total}`);
+              
+              // Reset state
+              setFullName("");
+              setPhoneNumber("");
+              setEmail("");
+              setNotes("");
+              setSelectedDate("");
+              setSelectedslot("");
+              cart.forEach(item => removeFromCart(item.id));
+            }}
             noValidate
             className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm"
           >
             <div className="mb-4">
               <label className="mb-2 block text-sm font-medium text-gray-700">
-                Select Tests
+                Select Tests & Packages
               </label>
 
               <div className="mb-3 flex flex-wrap gap-2">
@@ -116,22 +193,29 @@ export default function BookComponent({ tests }: BookComponentProps) {
               </div>
 
               <select
-                defaultValue=""
+                value=""
                 onChange={(e) => {
                   if (e.target.value) {
                     handleAddTest(e.target.value);
-                    e.target.value = "";
                   }
                 }}
                 className="w-full rounded-lg border border-gray-300 p-3"
               >
-                <option value="">Choose a test</option>
-
-                {tests.map((test) => (
-                  <option key={test.id} value={test.id}>
-                    {test.title} - Rs. {test.price}
-                  </option>
-                ))}
+                <option value="">Choose a test or package</option>
+                <optgroup label="Health Packages">
+                  {PACKAGES.map((pkg) => (
+                    <option key={pkg.id} value={pkg.id}>
+                      {pkg.name} - Rs. {pkg.price}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Individual Tests">
+                  {tests.map((test) => (
+                    <option key={test.id} value={test.id}>
+                      {test.title} - Rs. {test.price}
+                    </option>
+                  ))}
+                </optgroup>
               </select>
             </div>
 
@@ -143,7 +227,10 @@ export default function BookComponent({ tests }: BookComponentProps) {
               <input
                 type="text"
                 placeholder="e.g. Govind"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 p-3"
+                required
               />
             </div>
 
@@ -156,7 +243,10 @@ export default function BookComponent({ tests }: BookComponentProps) {
                 <input
                   type="tel"
                   placeholder="+91 98xxxxxxx"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 p-3"
+                  required
                 />
               </div>
 
@@ -168,7 +258,10 @@ export default function BookComponent({ tests }: BookComponentProps) {
                 <input
                   type="email"
                   placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 p-3"
+                  required
                 />
               </div>
             </div>
@@ -184,6 +277,7 @@ export default function BookComponent({ tests }: BookComponentProps) {
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   className="w-full rounded-lg border border-gray-300 p-3"
+                  required
                 />
               </div>
 
@@ -193,11 +287,12 @@ export default function BookComponent({ tests }: BookComponentProps) {
                 </label>
 
                 <select
-                  defaultValue=""
+                  value={selectedSlot}
                   onChange={(e) => {
                     setSelectedslot(e.target.value);
                   }}
                   className="w-full rounded-lg border border-gray-300 p-3"
+                  required
                 >
                   <option value="">Select Slot</option>
                   <option>09:00 AM - 11:00 AM</option>
@@ -217,6 +312,8 @@ export default function BookComponent({ tests }: BookComponentProps) {
               <textarea
                 rows={2}
                 placeholder="Any allergies, fasting status, or instructions"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 p-3"
               />
             </div>

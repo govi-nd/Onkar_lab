@@ -3,14 +3,21 @@
 import { useState } from "react";
 import CategoryFilter from "@/components/tests/CategoryFilter";
 import { useCart } from "@/components/cartContext";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import {
+  Droplet,
+  Sparkles,
+  Beaker,
+  HeartPulse,
+  FlaskConical,
+  Activity,
+  Clock,
+  ArrowRight
+} from "lucide-react";
 
-export type TestDetails = {
-  id: string;
-  title: string;
-  subtitle: string;
-  price: number;
-  category: string;
-};
+import TestCard, { TestDetails } from "./TestCard";
 
 export default function TestsCatalog({
   tests,
@@ -28,7 +35,7 @@ export default function TestsCatalog({
 
   return (
     <>
-      <div className="bg-[#F4F8FD]">
+      <div className="bg-[#F4F8FD] ">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
           <div className="flex flex-col mx-auto max-w-6xl">
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
@@ -74,9 +81,9 @@ export default function TestsCatalog({
         </div>
       </div>
 
-      <div className="min-h-screen py-10">
+      <div className="min-h-screen py-12 bg-gray-50/50">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="mb-4 text-sm text-muted-foreground">
+          <div className="mb-6 text-sm text-muted-foreground">
             Showing{" "}
             <span className="font-medium text-foreground">
               {filteredTests.length}
@@ -84,7 +91,7 @@ export default function TestsCatalog({
             tests
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:gap-8">
             {filteredTests.map((test) => (
               <TestCard key={test.id} test={test} />
             ))}
@@ -95,68 +102,3 @@ export default function TestsCatalog({
   );
 }
 
-function TestCard({ test }: { test: TestDetails }) {
-  const { cart, addToCart, removeFromCart } = useCart();
-
-  const isInCart = cart.some((item) => item.id === test.id);
-
-  return (
-    <div className="flex h-full w-full flex-col rounded-xl border border-gray-200 bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-      <div className="flex items-start justify-between gap-3">
-        <h3 className="text-base font-bold text-[oklch(20%_.03_250)]">
-          {test.title}
-        </h3>
-
-        <div className="rounded-md bg-[#ECF0E9] px-2.5 py-0.5 text-xs font-bold text-[#426F23]">
-          {test.category}
-        </div>
-      </div>
-
-      <p className="mt-2 text-sm text-gray-500">{test.subtitle}</p>
-
-      <div className="mt-3 flex items-center gap-1.5 text-xs text-gray-500">
-        <ClockIcon />
-        <span>Reports in 24hrs</span>
-      </div>
-
-      <div className="mt-auto flex items-center justify-between pt-5">
-        <div className="text-xl font-bold text-black">₹ {test.price}</div>
-
-        {isInCart ? (
-          <button
-            onClick={() => removeFromCart(test.id)}
-            className="inline-flex items-center justify-center rounded-md bg-red-600 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-red-700"
-          >
-            Remove from Cart
-          </button>
-        ) : (
-          <button
-            onClick={() => addToCart(test)}
-            className="inline-flex items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-blue-700"
-          >
-            Add to Cart
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function ClockIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-3.5 w-3.5"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="M12 6v6l4 2" />
-    </svg>
-  );
-}
