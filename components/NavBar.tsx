@@ -27,6 +27,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Logo from "./logo";
 export default function NavBar() {
   const pathname = usePathname();
   const { cart } = useCart();
@@ -41,12 +42,7 @@ export default function NavBar() {
         {/* Logo + Name */}
         <div className="flex items-center gap-2">
           <Link href="/" className="flex flex-row gap-2 items-center" onClick={() => setIsMobileMenuOpen(false)}>
-            <span className="grid h-10 w-10 place-items-center bg-blue-600 rounded-lg text-primary-foreground">
-              <Activity className="h-5 w-5" />
-            </span>
-            <span className="text-xl font-bold text-foreground">
-              Onkar Lab Diagnostics
-            </span>
+            <Logo className="h-20 w-auto" />
           </Link>
         </div>
 
