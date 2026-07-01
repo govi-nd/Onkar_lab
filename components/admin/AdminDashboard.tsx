@@ -602,7 +602,7 @@ function ManageBookingsDialog({
                           updateBookingStatus(booking.id, value as BookingStatus)
                         }
                       >
-                        <SelectTrigger className="w-[180px]">
+                        <SelectTrigger className="w-45">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>

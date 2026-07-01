@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import TestsCatalog from "@/components/tests/TestsCatalog";
 
 
+export const dynamic = 'force-dynamic'; // Force dynamic rendering 
 
 export default async function Home() {
   const testDetails = await prisma.test.findMany({
