@@ -5,9 +5,10 @@ export default function Logo({
 }) {
   return (
     <svg
+    
       viewBox="0 0 400 120"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
+      className="w-auto h-16"
       fill="none"
     >
       <defs>

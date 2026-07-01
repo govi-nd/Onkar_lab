@@ -208,14 +208,14 @@ export default async function HomePage() {
         </div>
 
         {/* logo strip */}
-        <div className="border-y border-border/60 bg-card/40 backdrop-blur">
+        {/* <div className="border-y border-border/60 bg-card/40 backdrop-blur">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-3 px-4 py-5 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:px-6">
             <span className="opacity-60">As trusted by</span>
             {["Apollo", "Fortis", "Manipal", "Narayana", "Max Health"].map((b) => (
               <span key={b} className="text-foreground/70">{b}</span>
             ))}
           </div>
-        </div>
+        </div> */}
       </section>
 
       {/* Trust bar */}
@@ -342,7 +342,7 @@ export default async function HomePage() {
       </section>
 
       {/* Why Onkar Labs */}
-      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">
+      {/* <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">
         <div className="text-center">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/5 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-accent">
             <Award className="h-3 w-3" /> Why Onkar Labs
@@ -372,10 +372,10 @@ export default async function HomePage() {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       {/* Testimonials */}
-      <section className="border-y border-border bg-[var(--surface-alt)]">
+      {/* <section className="border-y border-border bg-[var(--surface-alt)]">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">
           <div className="text-center">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
@@ -418,7 +418,7 @@ export default async function HomePage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA */}
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">

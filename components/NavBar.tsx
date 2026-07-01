@@ -37,12 +37,12 @@ export default function NavBar() {
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   return (
-    <div className="relative z-50 bg-white">
-      <div className="h-16 w-full border-b border-gray-200 flex items-center px-4 md:px-8 justify-between md:justify-around">
+    <div className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm w-full ">
+      <div className="h-18 w-full flex items-center px-4 md:px-8 justify-between md:justify-around">
         {/* Logo + Name */}
-        <div className="flex items-center gap-2">
-          <Link href="/" className="flex flex-row gap-2 items-center" onClick={() => setIsMobileMenuOpen(false)}>
-            <Logo className="h-10 sm:h-12 md:h-16 lg:h-20 w-auto transition-all" />
+        <div className="flex items-center gap-2 h-full py-2">
+          <Link href="/" className="flex flex-row gap-2 items-center h-full" onClick={() => setIsMobileMenuOpen(false)}>
+            <Logo className="h-full w-auto transition-all object-contain" />
           </Link>
         </div>
 
