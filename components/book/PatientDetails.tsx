@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { detailsSchema, Details, Errors } from "./types";
 import { useCartStore } from "@/store/useCartStore";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const SLOTS = [
   { time: "7:00 AM", label: "Early morning" },
@@ -19,6 +22,19 @@ const SLOTS = [
   { time: "4:00 PM", label: "Late afternoon" },
   { time: "6:00 PM", label: "Evening" },
 ] as const;
+
+const parseDate = (dateStr: string): Date | undefined => {
+  if (!dateStr) return undefined;
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day);
+};
+
+const formatDateToString = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 export default function PatientDetails() {
   const router = useRouter();
@@ -91,15 +107,42 @@ export default function PatientDetails() {
         <h2 className="text-lg font-semibold text-foreground">Pick a slot & your details</h2>
         <p className="text-sm text-muted-foreground">Our phlebotomist will call to confirm.</p>
 
-        <div className="mt-6">
+        <div className="mt-6 flex flex-col">
           <Label className="text-sm font-medium text-foreground">Preferred date</Label>
-          <Input
-            type="date"
-            min={todayDateString}
-            value={localDetails.date}
-            onChange={(e) => handleInputChange("date", e.target.value)}
-            className={cn("mt-1.5 h-11", errors.date && "border-destructive")}
-          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className={cn(
+                  "mt-1.5 h-11 w-full justify-start text-left font-normal border-border bg-background hover:bg-muted/50 hover:text-foreground",
+                  !localDetails.date && "text-muted-foreground",
+                  errors.date && "border-destructive focus-visible:ring-destructive/20"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                {localDetails.date ? (
+                  format(parseDate(localDetails.date)!, "PPP")
+                ) : (
+                  <span>Select preferred date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={parseDate(localDetails.date)}
+                onSelect={(date) => {
+                  if (date) {
+                    handleInputChange("date", formatDateToString(date));
+                  } else {
+                    handleInputChange("date", "");
+                  }
+                }}
+                disabled={{ before: new Date(new Date().setHours(0, 0, 0, 0)) }}
+              />
+            </PopoverContent>
+          </Popover>
           {errors.date && <p className="mt-1 text-xs text-destructive">{errors.date}</p>}
         </div>
 
