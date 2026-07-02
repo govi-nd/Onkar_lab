@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from "react";
 type Booking = {
   id: string;
   createdAt: string;
+  bookingStatus: "PENDING_PAYMENT" | "BOOKED" | "SAMPLE_COLLECTED" | "PROCESSING" | "REPORT_READY" | "COMPLETED" | "CANCELLED";
   report: {
     id: string;
     fileUrl: string;
@@ -30,6 +31,23 @@ type Booking = {
     };
   }[];
 };
+
+const bookingStatusLabels: Record<string, string> = {
+  PENDING_PAYMENT: "Pending Payment",
+  BOOKED: "Booked",
+  SAMPLE_COLLECTED: "Sample Collected",
+  PROCESSING: "Processing",
+  REPORT_READY: "Report Ready",
+  COMPLETED: "Completed",
+  CANCELLED: "Cancelled",
+};
+
+function getStatusColor(status: string) {
+  if (status === "CANCELLED") return "bg-red-100 text-red-700";
+  if (status === "COMPLETED" || status === "REPORT_READY") return "bg-green-100 text-green-700";
+  if (status === "PENDING_PAYMENT") return "bg-gray-100 text-gray-700";
+  return "bg-yellow-100 text-yellow-700"; // BOOKED, SAMPLE_COLLECTED, PROCESSING
+}
 
 export default function Report() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -251,15 +269,9 @@ export default function Report() {
                     {/* Right */}
                     <div className="flex items-center gap-2">
                       <span
-                        className={`rounded-md px-3 py-1 text-xs font-medium ${
-                          booking.report?.status === "UPLOADED"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-700"
-                        }`}
+                        className={`rounded-md px-3 py-1 text-xs font-medium ${getStatusColor(booking.bookingStatus)}`}
                       >
-                        {booking.report?.status === "UPLOADED"
-                          ? "Ready"
-                          : "Processing"}
+                        {bookingStatusLabels[booking.bookingStatus] || booking.bookingStatus}
                       </span>
 
                       {booking.report?.fileUrl && (

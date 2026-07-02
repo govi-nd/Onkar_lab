@@ -161,7 +161,7 @@ export default function AdminDashboard() {
   // Flatten all bookings across all users, newest first, for the table.
   const allBookings = users
     .flatMap((u) =>
-      u.bookings.map((b) => ({ ...b, patientName: u.name, patientId: u.id }))
+      u.bookings.map((b) => ({ ...b, patientName: u.name, patientId: u.id, patientPhone: u.phone }))
     )
     .filter((booking) => getPaymentStatus(booking) === "SUCCESS")
     .sort(
@@ -282,6 +282,7 @@ export default function AdminDashboard() {
           <TableHeader>
             <TableRow>
               <TableHead>Patient</TableHead>
+              <TableHead>Phone</TableHead>
               <TableHead>Tests</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Status</TableHead>
@@ -310,6 +311,7 @@ export default function AdminDashboard() {
               filteredBookings.map((booking) => (
                 <TableRow key={booking.id}>
                   <TableCell>{booking.patientName}</TableCell>
+                  <TableCell>{booking.patientPhone || "N/A"}</TableCell>
 
                   <TableCell>
                     {booking.tests
@@ -387,7 +389,10 @@ export default function AdminDashboard() {
         </p>
 
         <div className="flex flex-col gap-4">
-          <TestDialogBox />
+          <div className="flex gap-2">
+            <TestDialogBox />
+            <PackageDialogBox />
+          </div>
 
           <ManageBookingsDialog
             bookings={allBookings}
@@ -405,6 +410,112 @@ export default function AdminDashboard() {
     </div>
   </div>
 );
+}
+
+// ---------- Add Package ----------
+function PackageDialogBox() {
+  const [open, setOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const [title, setTitle] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [price, setPrice] = useState(0);
+  const category = "Package"; // Hardcoded category for packages
+
+  async function createPackage(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      const res = await fetch("/api/admin/tests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          subtitle,
+          category,
+          price,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        toast.error(data?.message || "Error creating package");
+        return;
+      }
+
+      toast.success("Package added");
+      setTitle("");
+      setSubtitle("");
+      setPrice(0);
+      setOpen(false);
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong while creating the package");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline">Add Package</Button>
+      </DialogTrigger>
+
+      <DialogContent className={ADMIN_DIALOG_CLASS}>
+        <form onSubmit={createPackage}>
+          <DialogHeader>
+            <DialogTitle>Add Package</DialogTitle>
+            <DialogDescription>Create a new health package.</DialogDescription>
+          </DialogHeader>
+
+          <FieldGroup className="mt-5">
+            <Field>
+              <Label>Package Name (Title)</Label>
+              <Input
+                value={title}
+                required
+                placeholder="e.g. Full Body Advanced"
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </Field>
+
+            <Field>
+              <Label>Tagline / Details (Subtitle - must be unique)</Label>
+              <Input
+                value={subtitle}
+                required
+                placeholder="e.g. Comprehensive 360° screening"
+                onChange={(e) => setSubtitle(e.target.value)}
+              />
+            </Field>
+
+            <Field>
+              <Label>Price (₹)</Label>
+              <Input
+                type="number"
+                value={price}
+                required
+                min={0}
+                onChange={(e) => setPrice(Number(e.target.value))}
+              />
+            </Field>
+
+            <Button type="submit" disabled={submitting}>
+              {submitting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Create Package"
+              )}
+            </Button>
+          </FieldGroup>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 // ---------- Add Test ----------
@@ -523,7 +634,7 @@ function TestDialogBox() {
 }
 
 // ---------- Manage Bookings ----------
-type FlatBooking = Booking & { patientName: string; patientId: string };
+type FlatBooking = Booking & { patientName: string; patientId: string; patientPhone?: string | null };
 
 function ManageBookingsDialog({
   bookings,
@@ -578,6 +689,7 @@ function ManageBookingsDialog({
             <TableHeader>
               <TableRow>
                 <TableHead>Patient</TableHead>
+                <TableHead>Phone</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Booking Status</TableHead>
@@ -590,6 +702,7 @@ function ManageBookingsDialog({
                 bookings.map((booking) => (
                   <TableRow key={booking.id}>
                     <TableCell>{booking.patientName}</TableCell>
+                    <TableCell>{booking.patientPhone || "N/A"}</TableCell>
                     <TableCell>
                       {new Date(booking.appointmentDate).toLocaleDateString()}
                     </TableCell>
@@ -747,6 +860,14 @@ function ViewPatientsDialog({ users }: { users: User[] }) {
             <div className="max-h-[50vh] overflow-y-auto">
               {filtered.length > 0 ? (
                 <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Bookings</TableHead>
+                    </TableRow>
+                  </TableHeader>
                   <TableBody>
                     {filtered.map((p) => (
                       <TableRow
@@ -757,6 +878,9 @@ function ViewPatientsDialog({ users }: { users: User[] }) {
                         <TableCell>{p.name}</TableCell>
                         <TableCell className="text-muted-foreground">
                           {p.email}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {p.phone || "N/A"}
                         </TableCell>
                         <TableCell className="text-muted-foreground text-sm">
                           {p.bookings.length} booking

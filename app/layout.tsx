@@ -9,6 +9,10 @@ const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 import { Providers } from "@/components/Providers";
 import { Toaster } from "@/components/ui/sonner";
+import Script from "next/script";
+
+// ...inside your layout JSX, before closing </body>
+
 
 export default function RootLayout({
   children,
@@ -21,9 +25,10 @@ export default function RootLayout({
         <Providers>
           <NavBar />
           {children}
-          <Footer/>
+          <Footer />
         </Providers>
         <Toaster />
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       </body>
     </html>
   );

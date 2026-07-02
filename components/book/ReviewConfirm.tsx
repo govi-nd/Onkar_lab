@@ -2,95 +2,210 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, User, CalendarDays, CheckCircle2, Clock } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { ChevronLeft, User, CalendarDays, Clock, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/useCartStore";
 
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window !== "undefined" && typeof window.Razorpay !== "undefined") {
+      resolve(true);
+      return;
+    }
+    const existing = document.querySelector(
+      'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
+    );
+    if (existing) {
+      existing.addEventListener("load", () => resolve(true));
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
 export default function ReviewConfirm() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const { cart, patientDetails, clearBooking } = useCartStore();
-  const [submitted, setSubmitted] = useState(false);
+
+  const [paying, setPaying] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (isSuccess) return;
     if (cart.length === 0) {
       router.replace("/book/select-tests");
     } else if (!patientDetails.name || !patientDetails.date || !patientDetails.slot) {
       router.replace("/book/details");
     }
-  }, [cart, patientDetails, router]);
+  }, [cart, patientDetails, router, isSuccess]);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/");
+    }
+  }, [status, router]);
 
   const subtotal = cart.reduce((sum, t) => sum + t.price, 0);
-  const homeCollectionFee = 0;
-  const finalPayableAmount = subtotal + homeCollectionFee;
+  const finalPayableAmount = subtotal;
 
-  const handleBack = () => {
-    router.push("/book/details");
+  const handleBack = () => router.push("/book/details");
+
+  const handlePayNow = async () => {
+    setError(null);
+    setPaying(true);
+
+    try {
+      // 1. Load Razorpay SDK first
+      const sdkLoaded = await loadRazorpayScript();
+      if (!sdkLoaded) {
+        setError("Failed to load payment gateway. Check your internet connection.");
+        setPaying(false);
+        return;
+      }
+
+      // 2. Create booking in DB
+      const bookingRes = await fetch("/api/bookings/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart, patientDetails }),
+      });
+      const bookingData = await bookingRes.json();
+
+      if (!bookingRes.ok) {
+        setError(bookingData.error || "Failed to create booking. Please try again.");
+        setPaying(false);
+        return;
+      }
+
+      const bookingId: string = bookingData.bookingId;
+
+      // 3. Create Razorpay order
+      const orderRes = await fetch("/api/payment/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingId }),
+      });
+      const order = await orderRes.json();
+
+      if (!orderRes.ok) {
+        setError(order.error || "Failed to create payment order.");
+        setPaying(false);
+        return;
+      }
+
+      // 4. Open Razorpay modal
+      const options = {
+        key: order.key,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Onkar Labs",
+        description: "Lab Test Booking",
+        order_id: order.orderId,
+        handler: async function (response: any) {
+          // 5. Verify payment
+          const verifyRes = await fetch("/api/payment/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              bookingId,
+            }),
+          });
+          const result = await verifyRes.json();
+
+          if (result.success) {
+            setIsSuccess(true);
+            clearBooking();
+            router.push(`/booking/${bookingId}/confirmation`);
+          } else {
+            setError("Payment verification failed. Contact support if amount was deducted.");
+            setPaying(false);
+          }
+        },
+        prefill: {
+          name: patientDetails.name,
+          email: patientDetails.email,
+          contact: patientDetails.phone || "",
+        },
+        theme: { color: "#0f4c81" },
+        modal: {
+          ondismiss: () => setPaying(false),
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", (response: any) => {
+        setError(`Payment failed: ${response.error.description}`);
+        setPaying(false);
+      });
+      rzp.open();
+    } catch (err) {
+      console.error("Payment flow error:", err);
+      setError("Something went wrong. Please try again.");
+      setPaying(false);
+    }
   };
 
-  const handleConfirm = () => {
-    // In a real app, this would submit data to an API
-    setSubmitted(true);
-    // Clear booking state after a delay or immediately
-    setTimeout(() => {
-      clearBooking();
-    }, 5000);
-  };
-
-  if (cart.length === 0 || !patientDetails.name) return null; // Prevent flicker
-
-  if (submitted) {
-    return (
-      <section className="mx-auto flex max-w-xl flex-col items-center px-4 py-24 text-center sm:px-6">
-        <span className="grid h-16 w-16 place-items-center rounded-full bg-accent/10 text-accent ring-8 ring-accent/5">
-          <CheckCircle2 className="h-8 w-8 text-primary" />
-        </span>
-        <h1 className="mt-6 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          Appointment confirmed
-        </h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Booked {cart.length} {cart.length === 1 ? "test" : "tests"} for{" "}
-          <span className="font-medium text-foreground">{patientDetails.date}</span> at{" "}
-          <span className="font-medium text-foreground">{patientDetails.slot}</span>. Confirmation sent to{" "}
-          <span className="font-medium text-foreground">{patientDetails.email}</span>.
-        </p>
-        <div className="mt-8 w-full rounded-2xl border border-border bg-card p-5 text-left">
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">Booking ID</div>
-          <div className="mt-1 font-mono text-sm text-foreground">MDL-9843A2F</div>
-        </div>
-        <Button onClick={() => router.push("/")} className="mt-8" variant="outline">
-          Return Home
-        </Button>
-      </section>
-    );
-  }
+  if (cart.length === 0 || !patientDetails.name) return null;
+  if (status === "loading") return null;
 
   return (
     <section className="mx-auto max-w-6xl sm:px-6 sm:py-14">
       <div className="flex items-center justify-between gap-3 mt-2 mb-2">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleBack}
-          className="gap-1"
-        >
+        <Button type="button" variant="outline" onClick={handleBack} className="gap-1">
           <ChevronLeft className="h-4 w-4" /> Back
         </Button>
-        <Button type="button" size="lg" onClick={handleConfirm}>
-          Pay ₹{finalPayableAmount} & confirm
+
+        <Button type="button" size="lg" onClick={handlePayNow} disabled={paying} className="gap-2">
+          {paying ? (
+            <>
+              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Processing…
+            </>
+          ) : (
+            <>
+              <ShieldCheck className="h-4 w-4" />
+              Pay ₹{finalPayableAmount} &amp; Confirm
+            </>
+          )}
         </Button>
       </div>
+
+      {error && (
+        <p className="mt-2 text-sm text-destructive text-right font-medium">{error}</p>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
         <div className="min-w-0">
           <div className="rounded-2xl border border-border bg-card p-5 sm:p-7">
-            <h2 className="text-lg font-semibold text-foreground">Review & confirm</h2>
+            <h2 className="text-lg font-semibold text-foreground">Review &amp; confirm</h2>
             <p className="text-sm text-muted-foreground">One last look before we lock in your slot.</p>
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <InfoBlock icon={User} label="Patient">
                 <div className="font-medium text-foreground">{patientDetails.name}</div>
-                <div className="text-xs text-muted-foreground">{patientDetails.phone} · {patientDetails.email}</div>
+                <div className="text-xs text-muted-foreground">
+                  {patientDetails.phone} · {patientDetails.email}
+                </div>
               </InfoBlock>
               <InfoBlock icon={CalendarDays} label="Appointment">
                 <div className="font-medium text-foreground">{patientDetails.date}</div>
@@ -165,12 +280,7 @@ function Row({ label, value, muted, accent }: { label: string; value: string; mu
   return (
     <div className="flex items-center justify-between">
       <span className="text-muted-foreground">{label}</span>
-      <span
-        className={cn(
-          "font-medium",
-          accent ? "text-primary" : muted ? "text-muted-foreground" : "text-foreground",
-        )}
-      >
+      <span className={cn("font-medium", accent ? "text-primary" : muted ? "text-muted-foreground" : "text-foreground")}>
         {value}
       </span>
     </div>

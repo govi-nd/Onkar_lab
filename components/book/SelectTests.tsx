@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Search, Clock, CheckCircle2, Plus, X, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PACKAGES } from "@/lib/packages-data";
 import { cn } from "@/lib/utils";
 import { TestOptionType } from "./types";
 import { useCartStore } from "@/store/useCartStore";
@@ -23,16 +22,6 @@ export default function SelectTests({ tests }: SelectTestsProps) {
   // Local state for search & filter
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  
-  // Format packages & tests to match CartItem and display needs
-  const formattedPackages = PACKAGES.map((pkg) => ({
-    id: pkg.id,
-    title: pkg.name,
-    subtitle: pkg.tagline || "",
-    price: pkg.price,
-    category: "Package",
-    turnaround: pkg.turnaround || "24 hrs",
-  }));
 
   const formattedTests = tests.map((test) => ({
     id: test.id,
@@ -43,7 +32,7 @@ export default function SelectTests({ tests }: SelectTestsProps) {
     turnaround: test.turnaround || "24 hrs",
   }));
 
-  const allAvailableItems = [...formattedPackages, ...formattedTests];
+  const allAvailableItems = [...formattedTests];
   const uniqueCategories = new Set(allAvailableItems.map((item) => item.category));
   const categoryFilterOptions = ["All", ...Array.from(uniqueCategories)];
   
