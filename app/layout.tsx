@@ -1,4 +1,4 @@
-import { CartProvider } from "@/components/cartContext";
+
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 import { Geist } from "next/font/google";
@@ -19,11 +19,9 @@ export default function RootLayout({
     <html lang="en" className={cn("font-sans", geist.variable)}>
       <body>
         <Providers>
-          <CartProvider>
-            <NavBar />
-            {children}
-            <Footer/>
-          </CartProvider>
+          <NavBar />
+          {children}
+          <Footer/>
         </Providers>
         <Toaster />
       </body>

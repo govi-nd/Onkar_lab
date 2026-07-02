@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import CategoryFilter from "@/components/tests/CategoryFilter";
-import { useCart } from "@/components/cartContext";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";

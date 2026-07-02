@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Suspense, useEffect, useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useCart } from "@/components/cartContext";
+import { useCartStore } from "@/store/useCartStore";
 import { Activity, User, Menu, X } from "lucide-react";
 import {
   DropdownMenu,
@@ -30,7 +30,7 @@ import {
 import Logo from "./logo";
 export default function NavBar() {
   const pathname = usePathname();
-  const { cart } = useCart();
+  const { cart } = useCartStore();
   const { data: session, status } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 

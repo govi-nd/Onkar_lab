@@ -1,6 +1,6 @@
 "use client";
 
-import { useCart } from "@/components/cartContext";
+import { useCartStore } from "@/store/useCartStore";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -85,7 +85,7 @@ const getCategoryStyles = (category: string) => {
 };
 
 export default function TestCard({ test }: { test: TestDetails }) {
-  const { cart, addToCart, removeFromCart } = useCart();
+  const { cart, addToCart, removeFromCart } = useCartStore();
   const isInCart = cart.some((item) => item.id === test.id);
 
   const style = getCategoryStyles(test.category);
