@@ -8,32 +8,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/useCartStore";
 
-declare global {
-  interface Window {
-    Razorpay: any;
-  }
-}
-
-function loadRazorpayScript(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (typeof window !== "undefined" && typeof window.Razorpay !== "undefined") {
-      resolve(true);
-      return;
-    }
-    const existing = document.querySelector(
-      'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
-    );
-    if (existing) {
-      existing.addEventListener("load", () => resolve(true));
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-}
 
 export default function ReviewConfirm() {
   const router = useRouter();
@@ -65,101 +39,7 @@ export default function ReviewConfirm() {
   const handleBack = () => router.push("/book/details");
 
   const handlePayNow = async () => {
-    setError(null);
     setPaying(true);
-
-    try {
-      // 1. Load Razorpay SDK first
-      const sdkLoaded = await loadRazorpayScript();
-      if (!sdkLoaded) {
-        setError("Failed to load payment gateway. Check your internet connection.");
-        setPaying(false);
-        return;
-      }
-
-      // 2. Create booking in DB
-      const bookingRes = await fetch("/api/bookings/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart, patientDetails }),
-      });
-      const bookingData = await bookingRes.json();
-
-      if (!bookingRes.ok) {
-        setError(bookingData.error || "Failed to create booking. Please try again.");
-        setPaying(false);
-        return;
-      }
-
-      const bookingId: string = bookingData.bookingId;
-
-      // 3. Create Razorpay order
-      const orderRes = await fetch("/api/payment/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookingId }),
-      });
-      const order = await orderRes.json();
-
-      if (!orderRes.ok) {
-        setError(order.error || "Failed to create payment order.");
-        setPaying(false);
-        return;
-      }
-
-      // 4. Open Razorpay modal
-      const options = {
-        key: order.key,
-        amount: order.amount,
-        currency: order.currency,
-        name: "Onkar Labs",
-        description: "Lab Test Booking",
-        order_id: order.orderId,
-        handler: async function (response: any) {
-          // 5. Verify payment
-          const verifyRes = await fetch("/api/payment/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-              bookingId,
-            }),
-          });
-          const result = await verifyRes.json();
-
-          if (result.success) {
-            setIsSuccess(true);
-            clearBooking();
-            router.push(`/booking/${bookingId}/confirmation`);
-          } else {
-            setError("Payment verification failed. Contact support if amount was deducted.");
-            setPaying(false);
-          }
-        },
-        prefill: {
-          name: patientDetails.name,
-          email: patientDetails.email,
-          contact: patientDetails.phone || "",
-        },
-        theme: { color: "#0f4c81" },
-        modal: {
-          ondismiss: () => setPaying(false),
-        },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.on("payment.failed", (response: any) => {
-        setError(`Payment failed: ${response.error.description}`);
-        setPaying(false);
-      });
-      rzp.open();
-    } catch (err) {
-      console.error("Payment flow error:", err);
-      setError("Something went wrong. Please try again.");
-      setPaying(false);
-    }
   };
 
   if (cart.length === 0 || !patientDetails.name) return null;
