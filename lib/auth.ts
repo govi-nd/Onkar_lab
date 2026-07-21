@@ -55,7 +55,7 @@ export const authOptions: NextAuthOptions = {
 
         const isValidPassword = await bcrypt.compare(
           password,
-          user.passwordHash
+          user.passwordHash,
         );
 
         if (!isValidPassword) {
@@ -109,6 +109,8 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
       }
 
       return token;
@@ -117,6 +119,8 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.name = token.name;
+        session.user.email = token.email;
       }
 
       return session;

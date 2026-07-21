@@ -19,8 +19,6 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
-        // myBlue : "border border-gray-300 text-base  rounded-full hover:bg-blue hover:text-white hover:translate-y-0.5 transition duration-500 ",
-        mygreen : "border border-gray-300 text-base rounded-full hover:bg-[#447324] hover:text-white hover:translate-y-0.5 transition duration-500 "
       },
       size: {
         default:

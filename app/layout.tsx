@@ -1,6 +1,6 @@
 
 import "./globals.css";
-import NavBar from "@/components/NavBar";
+import NavBar from "@/components/navbar/navbar";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Footer } from "@/components/footer";
